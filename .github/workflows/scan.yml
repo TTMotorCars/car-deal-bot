@@ -1,0 +1,39 @@
+name: Scan for car deals
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Restore dedup DB
+        uses: actions/cache@v4
+        with:
+          path: seen_listings.db
+          key: seen-listings-db-${{ github.run_id }}
+          restore-keys: |
+            seen-listings-db-
+
+      - name: Run bot
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM_NUMBER: ${{ secrets.TWILIO_FROM_NUMBER }}
+          ALERT_TO_NUMBER: ${{ secrets.ALERT_TO_NUMBER }}
+          EBAY_APP_ID: ${{ secrets.EBAY_APP_ID }}
+          MARKETCHECK_API_KEY: ${{ secrets.MARKETCHECK_API_KEY }}
+        run: python main.py
