@@ -8,6 +8,9 @@ on:
 jobs:
   scan:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: car-deal-bot-project
     steps:
       - uses: actions/checkout@v4
 
@@ -16,6 +19,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: car-deal-bot-project/requirements.txt
 
       - name: Install deps
         run: pip install -r requirements.txt
@@ -23,7 +27,7 @@ jobs:
       - name: Restore dedup DB
         uses: actions/cache@v4
         with:
-          path: seen_listings.db
+          path: car-deal-bot-project/seen_listings.db
           key: seen-listings-db-${{ github.run_id }}
           restore-keys: |
             seen-listings-db-
