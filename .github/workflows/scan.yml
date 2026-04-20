@@ -2,7 +2,7 @@ name: Scan for car deals
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 jobs:
